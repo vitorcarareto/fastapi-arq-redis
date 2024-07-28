@@ -1,4 +1,5 @@
 import random
+from datetime import timedelta
 
 from arq.connections import ArqRedis, create_pool
 from arq.connections import RedisSettings
@@ -47,7 +48,7 @@ async def task(task: TaskModel):
     task_ids: list = []
     for i in range(task.count):
         sleep_time = random.randint(1, 5)
-        job = await queue.enqueue_job('create_task', sleep_time)
+        job = await queue.enqueue_job('create_task', sleep_time, _defer_by=timedelta(seconds=1))
         task_ids.append(job.job_id)
     return {
         "queued": task.count,
